@@ -1,0 +1,136 @@
+import mysql.connector
+from mysql.connector import Error
+
+
+# ============================================================
+# DATABASE CONFIGURATION
+# ============================================================
+
+DB_HOST = "localhost"
+DB_USER = "root"
+DB_PASSWORD = "study"
+DB_NAME = "recruitment"
+
+
+# ============================================================
+# CREATE DATABASE CONNECTION
+# ============================================================
+
+def get_connection():
+
+    try:
+
+        connection = mysql.connector.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME
+        )
+
+        return connection
+
+    except Error as e:
+
+        print("Database connection error:", e)
+
+        return None
+
+
+# ============================================================
+# EXECUTE INSERT / UPDATE / DELETE
+# ============================================================
+
+def execute_query(query, values=None):
+
+    connection = get_connection()
+
+    if connection is None:
+        return False
+
+    cursor = connection.cursor()
+
+    try:
+
+        cursor.execute(query, values or ())
+        connection.commit()
+
+        return True
+
+    except Error as e:
+
+        print("Database query error:", e)
+
+        connection.rollback()
+
+        return False
+
+    finally:
+
+        cursor.close()
+        connection.close()
+
+
+# ============================================================
+# EXECUTE SELECT
+# ============================================================
+
+def fetch_all(query, values=None):
+
+    connection = get_connection()
+
+    if connection is None:
+        return []
+
+    cursor = connection.cursor()
+
+    try:
+
+        cursor.execute(query, values or ())
+
+        results = cursor.fetchall()
+
+        return results
+
+    except Error as e:
+
+        print("Database fetch error:", e)
+
+        return []
+
+    finally:
+
+        cursor.close()
+        connection.close()
+
+
+# ============================================================
+# EXECUTE SELECT - ONE RECORD
+# ============================================================
+
+def fetch_one(query, values=None):
+
+    connection = get_connection()
+
+    if connection is None:
+        return None
+
+    cursor = connection.cursor()
+
+    try:
+
+        cursor.execute(query, values or ())
+
+        result = cursor.fetchone()
+
+        return result
+
+    except Error as e:
+
+        print("Database fetch error:", e)
+
+        return None
+
+    finally:
+
+        cursor.close()
+        connection.close()
